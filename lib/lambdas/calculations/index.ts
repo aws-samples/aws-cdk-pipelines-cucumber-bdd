@@ -25,5 +25,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return generateErrorResult();
   }
 
-  return generateOkResult(JSON.stringify(result));
+  return generateOkResult(
+    JSON.stringify({
+      result,
+    })
+  );
 };
