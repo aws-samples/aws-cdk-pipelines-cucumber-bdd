@@ -1,4 +1,4 @@
-import { Stack, StackProps, pipelines } from "aws-cdk-lib";
+import { DockerImage, Stack, StackProps, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
 import {
   CodeBuildStep,
@@ -26,6 +26,9 @@ export class PipelineStack extends Stack {
 
     if (props.createRepo) {
       const asset = new Asset(this, "CodeAsset", {
+        bundling: {
+          image: DockerImage.fromRegistry("alpine"),
+        },
         path: path.join(__dirname, "../"),
         exclude: ["cdk.out", "node_modules"],
       });
