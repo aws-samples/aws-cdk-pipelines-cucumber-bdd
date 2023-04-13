@@ -10,11 +10,13 @@ export interface APILambdaFunctionProps {
   timeout?: Duration;
   memorySize?: number;
   retryAttempts?: number;
+  aliasName: string;
 }
 
 export class APILambdaFunction extends Construct {
   public readonly function: lambda.Function;
   public readonly executionRole: iam.Role;
+  public readonly alias: lambda.Alias;
   constructor(scope: Construct, id: string, props: APILambdaFunctionProps) {
     super(scope, id);
 
@@ -77,7 +79,15 @@ export class APILambdaFunction extends Construct {
       }
     );
 
+    const version = lambdaFunction.currentVersion;
+
+    const alias = new lambda.Alias(this, "LambdaAlias", {
+      aliasName: props.aliasName,
+      version,
+    });
+
     this.executionRole = role;
     this.function = lambdaFunction;
+    this.alias = alias;
   }
 }
