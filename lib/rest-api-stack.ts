@@ -11,13 +11,18 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { APILambdaFunction } from "./api-lambda-function";
 
+export interface RestAPIStackProps extends StackProps {
+  environment: string;
+}
+
 export class RestAPIStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: RestAPIStackProps) {
     super(scope, id, props);
 
     const api = new RestApi(this, "RestAPI", {
       deployOptions: {
         loggingLevel: MethodLoggingLevel.INFO,
+        stageName: props?.environment.toLowerCase().replace(/-/g, ""),
       },
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
