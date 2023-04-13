@@ -16,7 +16,7 @@ export interface RestAPIStackProps extends StackProps {
 }
 
 export class RestAPIStack extends Stack {
-  constructor(scope: Construct, id: string, props?: RestAPIStackProps) {
+  constructor(scope: Construct, id: string, props: RestAPIStackProps) {
     super(scope, id, props);
 
     const api = new RestApi(this, "RestAPI", {
@@ -37,6 +37,7 @@ export class RestAPIStack extends Stack {
       "CalculationsLambda",
       {
         entry: `${path.resolve(__dirname)}/lambdas/calculations/index.ts`,
+        aliasName: props.environment,
       }
     );
 
@@ -44,7 +45,7 @@ export class RestAPIStack extends Stack {
       parentResource: api.root,
       resourceName: "orders",
       methods: ["POST"],
-      handler: calculationsLambda.function,
+      handler: calculationsLambda.alias,
     });
   }
 }
