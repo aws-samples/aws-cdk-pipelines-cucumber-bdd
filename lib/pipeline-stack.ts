@@ -105,6 +105,7 @@ export class PipelineStack extends Stack {
             account: deployEnvironment.account,
             region: deployEnvironment.region,
           },
+          environment: deployEnvironment.environment,
         }
       );
 
