@@ -9,6 +9,7 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
+import { Asset } from "aws-cdk-lib/aws-s3-assets";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -24,12 +25,14 @@ export class PipelineStack extends Stack {
     let repo: CodeCommit.IRepository;
 
     if (props.createRepo) {
+      const asset = new Asset(this, "CodeAsset", {
+        path: path.join(__dirname, "../"),
+        exclude: ["cdk.out", "node_modules"],
+      });
+
       repo = new CodeCommit.Repository(this, "Repo", {
         repositoryName: props.repoName,
-        code: CodeCommit.Code.fromDirectory(
-          path.join(__dirname, "../"),
-          props.branchName
-        ),
+        code: CodeCommit.Code.fromAsset(asset, props.branchName),
       });
     } else {
       repo = CodeCommit.Repository.fromRepositoryName(
