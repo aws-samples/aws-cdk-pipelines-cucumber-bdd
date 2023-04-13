@@ -25,17 +25,12 @@ export class PipelineStack extends Stack {
     let repo: CodeCommit.IRepository;
 
     if (props.createRepo) {
-      const asset = new Asset(this, "CodeAsset", {
-        bundling: {
-          image: DockerImage.fromRegistry("alpine"),
-        },
-        path: path.join(__dirname, "../"),
-        exclude: ["cdk.out", "node_modules"],
-      });
-
       repo = new CodeCommit.Repository(this, "Repo", {
         repositoryName: props.repoName,
-        code: CodeCommit.Code.fromAsset(asset, props.branchName),
+        code: CodeCommit.Code.fromZipFile(
+          path.join(__dirname, "../initial-commit.zip"),
+          props.branchName
+        ),
       });
     } else {
       repo = CodeCommit.Repository.fromRepositoryName(
