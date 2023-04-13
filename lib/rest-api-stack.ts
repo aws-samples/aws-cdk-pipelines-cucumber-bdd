@@ -21,7 +21,6 @@ export class RestAPIStack extends Stack {
 
     const api = new RestApi(this, "RestAPI", {
       deployOptions: {
-        loggingLevel: MethodLoggingLevel.INFO,
         stageName: props?.environment.toLowerCase().replace(/-/g, ""),
       },
       defaultCorsPreflightOptions: {
