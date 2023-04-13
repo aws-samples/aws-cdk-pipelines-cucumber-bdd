@@ -20,6 +20,7 @@ export class RestAPIStack extends Stack {
     super(scope, id, props);
 
     const api = new RestApi(this, "RestAPI", {
+      restApiName: `RESTApi-${props.environment}`,
       deployOptions: {
         stageName: props?.environment.toLowerCase().replace(/-/g, ""),
       },
