@@ -17,18 +17,13 @@ export class CustomAPIGatewayMethod extends Construct {
   ) {
     super(scope, id);
 
-    const lambdaArnWithStageVariable = props.lambdaArn
-      .split(":")
-      .map((val, i) => {
-        return i === 7 ? "${stageVariables.lambdaAliasName}" : val;
-      })
-      .join(":");
-
     new CfnMethod(scope, "ApiGatewayMethod", {
       httpMethod: props.method,
       integration: {
         integrationHttpMethod: props.method,
-        uri: `arn:${Aws.PARTITION}:apigateway:${Aws.REGION}:lambda:path/2015-03-31/functions/${lambdaArnWithStageVariable}/invocations`,
+        uri:
+          `arn:${Aws.PARTITION}:apigateway:${Aws.REGION}:lambda:path/2015-03-31/functions/${props.lambdaArn}:` +
+          "${stageVariables.customStageName}/invocations",
         type: "AWS_PROXY",
       },
       resourceId: props.resourceId,

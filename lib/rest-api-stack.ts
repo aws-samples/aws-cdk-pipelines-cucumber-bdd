@@ -58,7 +58,7 @@ export class RestAPIStack extends Stack {
       parentResource: api.root,
       resourceName: "orders",
       methods: ["POST"],
-      handler: calculationsLambda.alias,
+      handler: calculationsLambda.function,
     });
   }
 
@@ -72,7 +72,7 @@ export class RestAPIStack extends Stack {
        */
       new CustomAPIGatewayMethod(this, `${props.resourceName}-${method}`, {
         method,
-        resourceId: props.parentResource.resourceId,
+        resourceId: newResource.resourceId,
         restApiId: props.parentResource.api.restApiId,
         lambdaArn: props.handler.functionArn,
       });
