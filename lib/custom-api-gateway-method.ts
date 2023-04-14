@@ -33,6 +33,7 @@ export class CustomAPIGatewayMethod extends Construct {
       },
       resourceId: props.resourceId,
       restApiId: props.restApiId,
+      authorizationType: "NONE",
     });
   }
 }
