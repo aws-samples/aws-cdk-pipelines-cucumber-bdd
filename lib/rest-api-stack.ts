@@ -11,7 +11,7 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { APILambdaFunction } from "./api-lambda-function";
 import { CustomAPIGatewayMethod } from "./custom-api-gateway-method";
-import { ArnPrincipal } from "aws-cdk-lib/aws-iam";
+import { ArnPrincipal, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 export interface RestAPIStackProps extends StackProps {
   environment: string;
@@ -57,10 +57,12 @@ export class RestAPIStack extends Stack {
       }
     );
 
-    calculationsLambda.alias.grantInvoke(
-      new ArnPrincipal(
-        api.arnForExecuteApi("*").split("/").slice(0, 2).join("/")
-      )
+    calculationsLambda.alias.addPermission(
+      "PermitAPIGWinvokeCalculationsLambdaAlias",
+      {
+        principal: new ServicePrincipal("apigateway.amazonaws.com"),
+        sourceArn: api.arnForExecuteApi("*").split("/").slice(0, 2).join("/"),
+      }
     );
 
     this.addLambdaBackedEndpoint({
