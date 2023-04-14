@@ -53,47 +53,6 @@ export class PipelineStack extends Stack {
     });
 
     /**
-     * Start Test Stage
-     */
-    // const testingStage = pipeline.addStage({ stageName: "Test" });
-    // const testingProject = new CodeBuild.PipelineProject(
-    //   this,
-    //   `TestingProject`,
-    //   {
-    //     environment: {
-    //       buildImage: CodeBuild.LinuxBuildImage.STANDARD_6_0,
-    //       environmentVariables: {
-    //         AWS_XRAY_CONTEXT_MISSING: {
-    //           value: "IGNORE_ERROR",
-    //         },
-    //       },
-    //     },
-    //     buildSpec: CodeBuild.BuildSpec.fromObject({
-    //       version: "0.2",
-    //       phases: {
-    //         install: {
-    //           "runtime-versions": {
-    //             nodejs: "16",
-    //           },
-    //           commands: ["ls", "npm install"],
-    //         },
-    //         build: {
-    //           commands: ["npm run test"],
-    //         },
-    //       },
-    //     }),
-    //   }
-    // );
-
-    // testingStage.addAction(
-    //   new CodePipelineActions.CodeBuildAction({
-    //     actionName: "TestingAction",
-    //     input: sourceArtifact,
-    //     project: testingProject,
-    //   })
-    // );
-
-    /**
      * Start Deploy Stage(s)
      */
 
