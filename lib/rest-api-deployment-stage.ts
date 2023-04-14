@@ -1,4 +1,4 @@
-import { Stage, StageProps } from "aws-cdk-lib";
+import { CfnOutput, Stage, StageProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { RestAPIStack } from "./rest-api-stack";
 
@@ -7,6 +7,8 @@ export interface RestAPIDeploymentStageProps extends StageProps {
 }
 
 export class RestAPIDeploymentStage extends Stage {
+  public readonly apiUrl: CfnOutput;
+
   constructor(
     scope: Construct,
     id: string,
@@ -14,9 +16,11 @@ export class RestAPIDeploymentStage extends Stage {
   ) {
     super(scope, id, props);
 
-    new RestAPIStack(this, "RestAPIStack", {
+    const restAPIStack = new RestAPIStack(this, "RestAPIStack", {
       env: props?.env,
       environment: props?.environment || "dev",
     });
+
+    this.apiUrl = restAPIStack.apiUrl;
   }
 }

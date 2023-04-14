@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import {
   Cors,
   IResource,
@@ -11,7 +11,7 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { APILambdaFunction } from "./api-lambda-function";
 import { CustomAPIGatewayMethod } from "./custom-api-gateway-method";
-import { ArnPrincipal, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 export interface RestAPIStackProps extends StackProps {
   environment: string;
@@ -26,6 +26,8 @@ interface AddApiResourceProps {
 }
 
 export class RestAPIStack extends Stack {
+  public readonly apiUrl: CfnOutput;
+
   constructor(scope: Construct, id: string, props: RestAPIStackProps) {
     super(scope, id, props);
 
@@ -71,6 +73,10 @@ export class RestAPIStack extends Stack {
       resourceName: "calculations",
       methods: ["POST"],
       handler: calculationsLambda.function,
+    });
+
+    this.apiUrl = new CfnOutput(this, "ApiUrl", {
+      value: api.url,
     });
   }
 
