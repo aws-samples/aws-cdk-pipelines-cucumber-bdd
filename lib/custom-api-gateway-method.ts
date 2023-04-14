@@ -10,6 +10,8 @@ export interface CustomAPIGatewayMethodProps {
 }
 
 export class CustomAPIGatewayMethod extends Construct {
+  public readonly method: CfnMethod;
+
   constructor(
     scope: Construct,
     id: string,
@@ -17,7 +19,7 @@ export class CustomAPIGatewayMethod extends Construct {
   ) {
     super(scope, id);
 
-    new CfnMethod(scope, "ApiGatewayMethod", {
+    const method = new CfnMethod(scope, "ApiGatewayMethod", {
       httpMethod: props.method,
       integration: {
         integrationHttpMethod: props.method,
@@ -30,5 +32,7 @@ export class CustomAPIGatewayMethod extends Construct {
       restApiId: props.restApiId,
       authorizationType: "NONE",
     });
+
+    this.method = method;
   }
 }
