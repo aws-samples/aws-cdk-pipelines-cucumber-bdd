@@ -11,6 +11,7 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { APILambdaFunction } from "./api-lambda-function";
 import { CustomAPIGatewayMethod } from "./custom-api-gateway-method";
+import { ArnPrincipal } from "aws-cdk-lib/aws-iam";
 
 export interface RestAPIStackProps extends StackProps {
   environment: string;
@@ -56,6 +57,10 @@ export class RestAPIStack extends Stack {
       }
     );
 
+    calculationsLambda.alias.grantInvoke(
+      new ArnPrincipal(api.arnForExecuteApi("*"))
+    );
+
     this.addLambdaBackedEndpoint({
       api,
       parentResource: api.root,
@@ -84,6 +89,9 @@ export class RestAPIStack extends Stack {
         }
       );
 
+      /**
+       * This line is necessary to ensure that the API Gateway Deployment does not happen before all methods are set up properly.
+       */
       props.api.latestDeployment?.node?.addDependency(customMethod.method);
     }
 
