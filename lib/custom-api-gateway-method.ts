@@ -28,7 +28,7 @@ export class CustomAPIGatewayMethod extends Construct {
       httpMethod: props.method,
       integration: {
         integrationHttpMethod: props.method,
-        uri: `arn:${Aws.PARTITION}:${Aws.REGION}:lambda:path/2015-03-31/functions/${lambdaArnWithStageVariable}/invocations`,
+        uri: `arn:${Aws.PARTITION}:apigateway:${Aws.REGION}:lambda:path/2015-03-31/functions/${lambdaArnWithStageVariable}/invocations`,
         type: "AWS_PROXY",
       },
       resourceId: props.resourceId,
