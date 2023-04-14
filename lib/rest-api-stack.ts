@@ -9,7 +9,7 @@ import {
 import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 import * as path from "path";
-import { APILambdaFunction } from "./api-lambda-function";
+import { LambdaFunction } from "./lambda-function";
 import { CustomAPIGatewayMethod } from "./custom-api-gateway-method";
 import { ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
@@ -50,14 +50,10 @@ export class RestAPIStack extends Stack {
 
     api.root.addMethod("ANY");
 
-    const calculationsLambda = new APILambdaFunction(
-      this,
-      "CalculationsLambda",
-      {
-        entry: `${path.resolve(__dirname)}/lambdas/calculations/index.ts`,
-        aliasName: stageName,
-      }
-    );
+    const calculationsLambda = new LambdaFunction(this, "CalculationsLambda", {
+      entry: `${path.resolve(__dirname)}/lambdas/calculations/index.ts`,
+      aliasName: stageName,
+    });
 
     calculationsLambda.alias.addPermission(
       "PermitAPIGWinvokeCalculationsLambdaAlias",

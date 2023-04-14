@@ -1,4 +1,4 @@
-import { Stack, StackProps, Stage, pipelines } from "aws-cdk-lib";
+import { Stack, StackProps, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
 import {
   CodeBuildStep,
@@ -9,6 +9,7 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
+import { FeatureBranchAutomation } from "./feature-branch-automation";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -30,6 +31,13 @@ export class PipelineStack extends Stack {
           path.join(__dirname, "../initial-commit.zip"),
           props.branchName
         ),
+      });
+
+      /**
+       * This is the custom construct responsible for setting up automated CodePipelines based on Feature Branches.
+       */
+      new FeatureBranchAutomation(this, "FeatureBranchAutomation", {
+        repo,
       });
     } else {
       repo = CodeCommit.Repository.fromRepositoryName(

@@ -13,7 +13,7 @@ export interface APILambdaFunctionProps {
   aliasName: string;
 }
 
-export class APILambdaFunction extends Construct {
+export class LambdaFunction extends Construct {
   public readonly function: lambda.Function;
   public readonly executionRole: iam.Role;
   public readonly alias: lambda.Alias;
