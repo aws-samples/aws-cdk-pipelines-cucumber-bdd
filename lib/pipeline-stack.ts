@@ -1,4 +1,4 @@
-import { DockerImage, Stack, StackProps, pipelines } from "aws-cdk-lib";
+import { Stack, StackProps, Stage, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
 import {
   CodeBuildStep,
@@ -9,7 +9,6 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
-import { Asset } from "aws-cdk-lib/aws-s3-assets";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -61,7 +60,6 @@ export class PipelineStack extends Stack {
     //   this,
     //   `TestingProject`,
     //   {
-    //     encryptionKey,
     //     environment: {
     //       buildImage: CodeBuild.LinuxBuildImage.STANDARD_6_0,
     //       environmentVariables: {
@@ -112,11 +110,25 @@ export class PipelineStack extends Stack {
         }
       );
 
+      const endToEndStep = new CodeBuildStep(
+        `EndToEndTest-${deployEnvironment.environment}`,
+        {
+          installCommands: ["npm install -g aws-cdk"],
+          commands: [
+            "npm ci",
+            "API_URL=https://1bbyx6ckne.execute-api.us-east-1.amazonaws.com/dev",
+            // `API_URL=$(aws ssm get-parameter --name "/api-gw-demo/${deployEnvironment.environment}/API_URL" --with-decryption --query "Parameter.Value" --output text)`,
+            "npm run e2e",
+          ],
+        }
+      );
+
       pipeline.addStage(deployStage, {
         pre:
           deployEnvironment.environment === "Prod"
             ? [new pipelines.ManualApprovalStep("ApproveProdDeployment")]
             : [],
+        post: deployEnvironment.environment === "Prod" ? [] : [endToEndStep],
       });
     });
   }
