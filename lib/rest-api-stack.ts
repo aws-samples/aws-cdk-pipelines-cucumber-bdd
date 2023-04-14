@@ -59,7 +59,7 @@ export class RestAPIStack extends Stack {
     this.addLambdaBackedEndpoint({
       api,
       parentResource: api.root,
-      resourceName: "orders",
+      resourceName: "calculations",
       methods: ["POST"],
       handler: calculationsLambda.function,
     });
