@@ -116,10 +116,13 @@ export class PipelineStack extends Stack {
           installCommands: ["npm install -g aws-cdk"],
           commands: [
             "npm ci",
-            "API_URL=https://1bbyx6ckne.execute-api.us-east-1.amazonaws.com/dev",
+            "API_URL=https://1bbyx6ckne.execute-api.us-east-1.amazonaws.com/${ENVIRONMENT}",
             // `API_URL=$(aws ssm get-parameter --name "/api-gw-demo/${deployEnvironment.environment}/API_URL" --with-decryption --query "Parameter.Value" --output text)`,
             "npm run e2e",
           ],
+          envFromCfnOutputs: {
+            API_URL: deployStage.apiUrl,
+          },
         }
       );
 
