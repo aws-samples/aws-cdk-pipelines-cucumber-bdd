@@ -58,7 +58,9 @@ export class RestAPIStack extends Stack {
     );
 
     calculationsLambda.alias.grantInvoke(
-      new ArnPrincipal(api.arnForExecuteApi("*"))
+      new ArnPrincipal(
+        api.arnForExecuteApi("*").split("/").slice(0, 2).join("/")
+      )
     );
 
     this.addLambdaBackedEndpoint({
