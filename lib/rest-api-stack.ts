@@ -2,6 +2,7 @@ import { Stack, StackProps } from "aws-cdk-lib";
 import {
   Cors,
   IResource,
+  IRestApi,
   LambdaIntegration,
   RestApi,
 } from "aws-cdk-lib/aws-apigateway";
@@ -16,6 +17,7 @@ export interface RestAPIStackProps extends StackProps {
 }
 
 interface AddApiResourceProps {
+  api: IRestApi;
   parentResource: IResource;
   resourceName: string;
   methods: string[];
@@ -55,6 +57,7 @@ export class RestAPIStack extends Stack {
     );
 
     this.addLambdaBackedEndpoint({
+      api,
       parentResource: api.root,
       resourceName: "orders",
       methods: ["POST"],
@@ -70,12 +73,18 @@ export class RestAPIStack extends Stack {
        * Adding custom method, since we want to use stage variables to invoke different aliases
        * This functionality is not currently supported by the AWS CDK construct LambdaIntegration.
        */
-      new CustomAPIGatewayMethod(this, `${props.resourceName}-${method}`, {
-        method,
-        resourceId: newResource.resourceId,
-        restApiId: props.parentResource.api.restApiId,
-        lambdaArn: props.handler.functionArn,
-      });
+      const customMethod = new CustomAPIGatewayMethod(
+        this,
+        `${props.resourceName}-${method}`,
+        {
+          method,
+          resourceId: newResource.resourceId,
+          restApiId: props.parentResource.api.restApiId,
+          lambdaArn: props.handler.functionArn,
+        }
+      );
+
+      props.api.latestDeployment?.node?.addDependency(customMethod.method);
     }
 
     return newResource;
