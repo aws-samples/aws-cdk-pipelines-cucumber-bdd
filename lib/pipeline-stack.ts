@@ -71,25 +71,9 @@ export class PipelineStack extends Stack {
 
       if (deployEnvironment.environment !== "Prod") {
         /**
-         * Store Test User Password in Secrets Manager
-         */
-        const testUserPassword = new Secret(this, "TestUserPassword", {
-          encryptionKey: new Key(this, "CucumberTestUserPasswordEncKey", {
-            enableKeyRotation: true,
-          }),
-        });
-
-        cdknag.NagSuppressions.addResourceSuppressions(testUserPassword, [
-          {
-            id: "AwsSolutions-SMG4",
-            reason: "Automatic secret rotation is not valid for Cognito Users.",
-          },
-        ]);
-
-        /**
          * The below custom construct will create a test cognito user that can be used for cucumber test runs.
          */
-        new CognitoTestUser(
+        const cognitoTestUser = new CognitoTestUser(
           this,
           `CognitoTestUser-${deployEnvironment.environment}`,
           {
@@ -111,7 +95,8 @@ export class PipelineStack extends Stack {
               "npm run e2e",
             ],
             env: {
-              COGNITO_PASSWORD_SECRETS_MANAGER_ARN: testUserPassword.secretArn,
+              COGNITO_PASSWORD_SECRETS_MANAGER_ARN:
+                cognitoTestUser.testUserPasswordSecret.secretArn,
             },
             envFromCfnOutputs: {
               API_URL: deployStage.apiUrl,
