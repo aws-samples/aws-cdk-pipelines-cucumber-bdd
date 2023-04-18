@@ -10,6 +10,8 @@ import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
 import * as cdknag from "cdk-nag";
 import { CognitoTestUser } from "./cognito-test-user";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
+import { Key } from "aws-cdk-lib/aws-kms";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -67,19 +69,16 @@ export class PipelineStack extends Stack {
        */
       Aspects.of(deployStage).add(new cdknag.AwsSolutionsChecks());
 
-      const endToEndStep = new CodeBuildStep(
-        `EndToEndTest-${deployEnvironment.environment}`,
-        {
-          installCommands: ["npm install -g aws-cdk"],
-          commands: ["npm ci", "echo $API_URL", "npm run e2e"],
-          envFromCfnOutputs: {
-            API_URL: deployStage.apiUrl,
-            COGNITO_CLIENT_ID: deployStage.cognitoClientId,
-          },
-        }
-      );
-
       if (deployEnvironment.environment !== "Prod") {
+        /**
+         * Store Test User Password in Secrets Manager
+         */
+        const testUserPassword = new Secret(this, "TestUserPassword", {
+          encryptionKey: new Key(this, "CucumberTestUserPasswordEncKey", {
+            enableKeyRotation: true,
+          }),
+        });
+
         /**
          * The below custom construct will create a test cognito user that can be used for cucumber test runs.
          */
@@ -91,15 +90,38 @@ export class PipelineStack extends Stack {
             cognitoPoolId: deployStage.cognitoPoolId.value,
           }
         );
-      }
 
-      pipeline.addStage(deployStage, {
-        pre:
-          deployEnvironment.environment === "Prod"
-            ? [new pipelines.ManualApprovalStep("ApproveProdDeployment")]
-            : [],
-        post: deployEnvironment.environment === "Prod" ? [] : [endToEndStep],
-      });
+        const endToEndStep = new CodeBuildStep(
+          `EndToEndTest-${deployEnvironment.environment}`,
+          {
+            installCommands: ["npm install -g aws-cdk"],
+            commands: [
+              "npm ci",
+              "echo $API_URL",
+              "echo $COGNITO_PASSWORD_SECRETS_MANAGER_ARN",
+              "echo $COGNITO_CLIENT_ID",
+              "echo $COGNITO_USER_NAME",
+              "npm run e2e",
+            ],
+            env: {
+              COGNITO_PASSWORD_SECRETS_MANAGER_ARN: testUserPassword.secretArn,
+            },
+            envFromCfnOutputs: {
+              API_URL: deployStage.apiUrl,
+              COGNITO_CLIENT_ID: deployStage.cognitoClientId,
+              COGNITO_USER_NAME: deployStage.apiUrl,
+            },
+          }
+        );
+
+        pipeline.addStage(deployStage, {
+          post: [endToEndStep],
+        });
+      } else {
+        pipeline.addStage(deployStage, {
+          pre: [new pipelines.ManualApprovalStep("ApproveProdDeployment")],
+        });
+      }
     });
   }
 }
