@@ -1,5 +1,8 @@
 import { Aws } from "aws-cdk-lib";
-import { CfnMethod } from "aws-cdk-lib/aws-apigateway";
+import {
+  CfnMethod,
+  CognitoUserPoolsAuthorizer,
+} from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 
 export interface CustomAPIGatewayMethodProps {
@@ -7,6 +10,7 @@ export interface CustomAPIGatewayMethodProps {
   resourceId: string;
   restApiId: string;
   lambdaArn: string;
+  authorizer: CognitoUserPoolsAuthorizer;
 }
 
 export class CustomAPIGatewayMethod extends Construct {
@@ -30,7 +34,8 @@ export class CustomAPIGatewayMethod extends Construct {
       },
       resourceId: props.resourceId,
       restApiId: props.restApiId,
-      authorizationType: "NONE",
+      authorizerId: props.authorizer.authorizerId,
+      authorizationType: "COGNITO_USER_POOLS",
     });
 
     this.method = method;

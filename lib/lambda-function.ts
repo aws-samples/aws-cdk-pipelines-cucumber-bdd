@@ -1,8 +1,9 @@
-import { Construct } from "constructs";
-import * as nodeLambda from "aws-cdk-lib/aws-lambda-nodejs";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as iam from "aws-cdk-lib/aws-iam";
 import { Duration } from "aws-cdk-lib";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as nodeLambda from "aws-cdk-lib/aws-lambda-nodejs";
+import { Construct } from "constructs";
+import * as cdknag from "cdk-nag";
 
 export interface APILambdaFunctionProps {
   entry: string;
@@ -85,6 +86,18 @@ export class LambdaFunction extends Construct {
       aliasName: props.aliasName,
       version,
     });
+
+    cdknag.NagSuppressions.addResourceSuppressions(
+      role,
+      [
+        {
+          id: "AwsSolutions-IAM5",
+          reason:
+            "This role is customer managed and uses least-priviledge. The *'s are needed to be able to log properly.",
+        },
+      ],
+      true
+    );
 
     this.executionRole = role;
     this.function = lambdaFunction;
