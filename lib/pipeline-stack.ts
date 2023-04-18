@@ -77,6 +77,19 @@ export class PipelineStack extends Stack {
         }
       );
 
+      if (deployEnvironment.environment !== "Prod") {
+        /**
+         * The below custom construct will create a test cognito user that can be used for cucumber test runs.
+         */
+        // new CognitoTestUser(
+        //   this,
+        //   `CognitoTestUser-${deployEnvironment.environment}`,
+        //   {
+        //     deployEnvironment,
+        //   }
+        // );
+      }
+
       pipeline.addStage(deployStage, {
         pre:
           deployEnvironment.environment === "Prod"
