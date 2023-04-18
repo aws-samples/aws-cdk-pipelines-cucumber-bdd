@@ -79,6 +79,13 @@ export class PipelineStack extends Stack {
           }),
         });
 
+        cdknag.NagSuppressions.addResourceSuppressions(testUserPassword, [
+          {
+            id: "AwsSolutions-SMG4",
+            reason: "Automatic secret rotation is not valid for Cognito Users.",
+          },
+        ]);
+
         /**
          * The below custom construct will create a test cognito user that can be used for cucumber test runs.
          */
