@@ -63,6 +63,7 @@ export class RestAPIStack extends Stack {
 
     const api = new RestApi(this, "RestAPI", {
       restApiName: `RESTApi-${props.environment}`,
+      cloudWatchRole: true,
       deployOptions: {
         stageName,
         variables: {
@@ -127,6 +128,11 @@ export class RestAPIStack extends Stack {
           id: "AwsSolutions-APIG6",
           reason:
             "The REST API has cloudwatch logging setup on needed methods.",
+        },
+        {
+          id: "AwsSolutions-IAM4",
+          reason:
+            "The Service Role created by the RestAPI construct is least-privilege and necessary to log.",
         },
       ],
       true

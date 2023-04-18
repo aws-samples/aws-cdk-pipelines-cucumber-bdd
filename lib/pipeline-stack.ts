@@ -61,6 +61,9 @@ export class PipelineStack extends Stack {
         }
       );
 
+      /**
+       * This line is necessary to run CDK Nag on the application deployment stacks.
+       */
       Aspects.of(deployStage).add(new cdknag.AwsSolutionsChecks());
 
       const endToEndStep = new CodeBuildStep(
