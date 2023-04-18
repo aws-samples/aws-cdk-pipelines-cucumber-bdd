@@ -30,6 +30,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.75.0-alpha.0",
     "aws-cdk-lib": "^2.73.0",
     "axios": "^1.3.5",
     "cdk-nag": "^2.25.9",

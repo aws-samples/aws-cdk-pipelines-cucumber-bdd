@@ -1,4 +1,4 @@
-import { Stack, StackProps, pipelines } from "aws-cdk-lib";
+import { Aspects, Stack, StackProps, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
 import {
   CodeBuildStep,
@@ -6,10 +6,9 @@ import {
   CodePipelineSource,
 } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-import * as path from "path";
 import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
-import { FeatureBranchAutomation } from "./feature-branch-automation";
+import * as cdknag from "cdk-nag";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -27,17 +26,6 @@ export class PipelineStack extends Stack {
     if (props.createRepo) {
       repo = new CodeCommit.Repository(this, "Repo", {
         repositoryName: props.repoName,
-        code: CodeCommit.Code.fromZipFile(
-          path.join(__dirname, "../initial-commit.zip"),
-          props.branchName
-        ),
-      });
-
-      /**
-       * This is the custom construct responsible for setting up automated CodePipelines based on Feature Branches.
-       */
-      new FeatureBranchAutomation(this, "FeatureBranchAutomation", {
-        repo,
       });
     } else {
       repo = CodeCommit.Repository.fromRepositoryName(
@@ -69,13 +57,11 @@ export class PipelineStack extends Stack {
         this,
         `DeployRestAPI-${deployEnvironment.environment}`,
         {
-          env: {
-            account: deployEnvironment.account,
-            region: deployEnvironment.region,
-          },
           environment: deployEnvironment.environment,
         }
       );
+
+      Aspects.of(deployStage).add(new cdknag.AwsSolutionsChecks());
 
       const endToEndStep = new CodeBuildStep(
         `EndToEndTest-${deployEnvironment.environment}`,
