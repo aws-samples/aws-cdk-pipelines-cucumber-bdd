@@ -9,6 +9,7 @@ import { Construct } from "constructs";
 import { DeployEnvironment } from "../types";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
 import * as cdknag from "cdk-nag";
+import { CognitoTestUser } from "./cognito-test-user";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -73,6 +74,7 @@ export class PipelineStack extends Stack {
           commands: ["npm ci", "echo $API_URL", "npm run e2e"],
           envFromCfnOutputs: {
             API_URL: deployStage.apiUrl,
+            COGNITO_CLIENT_ID: deployStage.cognitoClientId,
           },
         }
       );
@@ -81,13 +83,14 @@ export class PipelineStack extends Stack {
         /**
          * The below custom construct will create a test cognito user that can be used for cucumber test runs.
          */
-        // new CognitoTestUser(
-        //   this,
-        //   `CognitoTestUser-${deployEnvironment.environment}`,
-        //   {
-        //     deployEnvironment,
-        //   }
-        // );
+        new CognitoTestUser(
+          this,
+          `CognitoTestUser-${deployEnvironment.environment}`,
+          {
+            deployEnvironment,
+            cognitoPoolId: deployStage.cognitoPoolId.value,
+          }
+        );
       }
 
       pipeline.addStage(deployStage, {

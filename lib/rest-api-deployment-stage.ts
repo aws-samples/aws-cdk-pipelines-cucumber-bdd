@@ -9,6 +9,7 @@ export interface RestAPIDeploymentStageProps extends StageProps {
 export class RestAPIDeploymentStage extends Stage {
   public readonly apiUrl: CfnOutput;
   public readonly cognitoClientId: CfnOutput;
+  public readonly cognitoPoolId: CfnOutput;
 
   constructor(
     scope: Construct,
@@ -24,5 +25,6 @@ export class RestAPIDeploymentStage extends Stage {
 
     this.apiUrl = restAPIStack.apiUrl;
     this.cognitoClientId = restAPIStack.cognitoClientId;
+    this.cognitoPoolId = restAPIStack.cognitoPoolId;
   }
 }
