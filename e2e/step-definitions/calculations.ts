@@ -70,6 +70,10 @@ Given("operation is ADD", async function () {
   this.testOperation = "ADD";
 });
 
+Given("operation is SUBTRACT", async function () {
+  this.testOperation = "SUBTRACT";
+});
+
 When("I calculate the result", async function () {
   const result = await axios.post(
     `${process.env.API_URL}/calculations`,

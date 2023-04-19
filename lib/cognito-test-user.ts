@@ -1,4 +1,4 @@
-import { IKey, Key } from "aws-cdk-lib/aws-kms";
+import { Key } from "aws-cdk-lib/aws-kms";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import * as cdknag from "cdk-nag";
 import { Construct } from "constructs";

@@ -2,8 +2,8 @@ import { Duration } from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodeLambda from "aws-cdk-lib/aws-lambda-nodejs";
-import { Construct } from "constructs";
 import * as cdknag from "cdk-nag";
+import { Construct } from "constructs";
 
 export interface APILambdaFunctionProps {
   entry: string;
