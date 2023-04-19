@@ -5,13 +5,11 @@ import {
   CodePipeline,
   CodePipelineSource,
 } from "aws-cdk-lib/pipelines";
+import * as cdknag from "cdk-nag";
 import { Construct } from "constructs";
 import { DeployEnvironment } from "../types";
-import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
-import * as cdknag from "cdk-nag";
 import { CognitoTestUser } from "./cognito-test-user";
-import { Secret } from "aws-cdk-lib/aws-secretsmanager";
-import { Key } from "aws-cdk-lib/aws-kms";
+import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -78,36 +76,35 @@ export class PipelineStack extends Stack {
           `CognitoTestUser-${deployEnvironment.environment}`,
           {
             deployEnvironment,
-            cognitoPoolId: deployStage.cognitoPoolId.value,
+            encryptionKey: pipeline.pipeline.artifactBucket.encryptionKey,
           }
         );
 
-        const endToEndStep = new CodeBuildStep(
-          `EndToEndTest-${deployEnvironment.environment}`,
+        const bddTestStep = new CodeBuildStep(
+          `BDD-Tests-${deployEnvironment.environment}`,
           {
             installCommands: ["npm install -g aws-cdk"],
             commands: [
               "npm ci",
               "echo $API_URL",
-              "echo $COGNITO_PASSWORD_SECRETS_MANAGER_ARN",
+              "echo $COGNITO_TEST_USER_PASSWORD_SECRETS_MANAGER_ARN",
               "echo $COGNITO_CLIENT_ID",
-              "echo $COGNITO_USER_NAME",
               "npm run e2e",
             ],
             env: {
-              COGNITO_PASSWORD_SECRETS_MANAGER_ARN:
+              COGNITO_TEST_USER_PASSWORD_SECRETS_MANAGER_ARN:
                 cognitoTestUser.testUserPasswordSecret.secretArn,
             },
             envFromCfnOutputs: {
               API_URL: deployStage.apiUrl,
               COGNITO_CLIENT_ID: deployStage.cognitoClientId,
-              COGNITO_USER_NAME: deployStage.apiUrl,
+              COGNITO_USER_POOL_ID: deployStage.cognitoPoolId,
             },
           }
         );
 
         pipeline.addStage(deployStage, {
-          post: [endToEndStep],
+          post: [bddTestStep],
         });
       } else {
         pipeline.addStage(deployStage, {
