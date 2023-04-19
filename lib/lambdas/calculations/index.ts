@@ -14,19 +14,26 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
   let result;
 
-  switch (operation) {
-    case "ADD":
-      result = addNumbers(number1, number2);
-      break;
-    case "SUBTRACT":
-      result = subtractNumbers(number1, number2);
-    default:
-      return generateErrorResult();
-  }
+  try {
+    console.log(operation);
+    switch (operation) {
+      case "ADD":
+        result = addNumbers(number1, number2);
+        break;
+      case "SUBTRACT":
+        result = subtractNumbers(number1, number2);
+        break;
+      default:
+        return generateErrorResult();
+    }
 
-  return generateOkResult(
-    JSON.stringify({
-      result,
-    })
-  );
+    return generateOkResult(
+      JSON.stringify({
+        result,
+      })
+    );
+  } catch (err) {
+    console.log(JSON.stringify(err));
+    return generateErrorResult();
+  }
 };
