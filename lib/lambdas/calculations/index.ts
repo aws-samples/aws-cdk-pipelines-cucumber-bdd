@@ -15,7 +15,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   let result;
 
   try {
-    console.log(operation);
     switch (operation) {
       case "ADD":
         result = addNumbers(number1, number2);
