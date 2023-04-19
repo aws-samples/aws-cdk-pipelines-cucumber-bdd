@@ -10,6 +10,7 @@ import { Construct } from "constructs";
 import { DeployEnvironment } from "../types";
 import { CognitoTestUser } from "./cognito-test-user";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
+import { Effect, ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -76,7 +77,6 @@ export class PipelineStack extends Stack {
           `CognitoTestUser-${deployEnvironment.environment}`,
           {
             deployEnvironment,
-            encryptionKey: pipeline.pipeline.artifactBucket.encryptionKey,
           }
         );
 
@@ -101,6 +101,31 @@ export class PipelineStack extends Stack {
               COGNITO_USER_POOL_ID: deployStage.cognitoPoolId,
             },
           }
+        );
+
+        bddTestStep.role?.addManagedPolicy(
+          new ManagedPolicy(this, "AllowTestUserSetup", {
+            statements: [
+              new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: [
+                  "cognito-idp:AdminCreateUser",
+                  "cognito-idp:AdminSetUserPassword",
+                ],
+                resources: [deployStage.cognitoPoolArn.value],
+              }),
+              new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: ["kms:Decrypt"],
+                resources: [cognitoTestUser.passwordEncryptionKey.keyArn],
+              }),
+              new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: ["secretsmanager:GetSecretValue"],
+                resources: [cognitoTestUser.testUserPasswordSecret.secretArn],
+              }),
+            ],
+          })
         );
 
         pipeline.addStage(deployStage, {
