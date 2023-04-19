@@ -1,13 +1,12 @@
-import { Construct } from "constructs";
-import { DeployEnvironment } from "../types";
+import { IKey } from "aws-cdk-lib/aws-kms";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import * as cdknag from "cdk-nag";
-import { Key } from "aws-cdk-lib/aws-kms";
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { DeployEnvironment } from "../types";
 
 export interface CognitoTestUserProps {
   deployEnvironment: DeployEnvironment;
-  cognitoPoolId: string;
+  encryptionKey?: IKey;
 }
 
 export class CognitoTestUser extends Construct {
@@ -20,10 +19,8 @@ export class CognitoTestUser extends Construct {
      * Store Test User Password in Secrets Manager
      */
     const testUserPassword = new Secret(this, "TestUserPassword", {
-      encryptionKey: new Key(this, "CucumberTestUserPasswordEncKey", {
-        enableKeyRotation: true,
-        removalPolicy: RemovalPolicy.DESTROY,
-      }),
+      encryptionKey: props.encryptionKey,
+      secretName: `test-user-password-${props.deployEnvironment.environment}`,
     });
 
     cdknag.NagSuppressions.addResourceSuppressions(testUserPassword, [

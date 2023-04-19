@@ -6,7 +6,6 @@ import {
   IResource,
   IRestApi,
   LogGroupLogDestination,
-  MockIntegration,
   RestApi,
 } from "aws-cdk-lib/aws-apigateway";
 import { AdvancedSecurityMode, UserPool } from "aws-cdk-lib/aws-cognito";

@@ -1,6 +1,6 @@
 Feature: Calculations
 
-    @dev @preprod @feature
+    @RequiresAuthentication
     Scenario Outline: Calculations endpoint returns the correct results
         Given first number is set to <number1>
         And second number is set to <number2>
