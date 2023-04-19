@@ -1,4 +1,4 @@
-import { Aspects, Stack, StackProps, pipelines } from "aws-cdk-lib";
+import { Aspects, Aws, Stack, StackProps, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
 import {
   CodeBuildStep,
@@ -100,19 +100,16 @@ export class PipelineStack extends Stack {
               COGNITO_CLIENT_ID: deployStage.cognitoClientId,
               COGNITO_USER_POOL_ID: deployStage.cognitoPoolId,
             },
-          }
-        );
-
-        bddTestStep.role?.addManagedPolicy(
-          new ManagedPolicy(this, "AllowTestUserSetup", {
-            statements: [
+            rolePolicyStatements: [
               new PolicyStatement({
                 effect: Effect.ALLOW,
                 actions: [
                   "cognito-idp:AdminCreateUser",
                   "cognito-idp:AdminSetUserPassword",
                 ],
-                resources: [deployStage.cognitoPoolArn.value],
+                resources: [
+                  `arn:${Aws.PARTITION}:cognito-idp:${Aws.REGION}:${Aws.ACCOUNT_ID}:userpool/*`,
+                ],
               }),
               new PolicyStatement({
                 effect: Effect.ALLOW,
@@ -125,7 +122,7 @@ export class PipelineStack extends Stack {
                 resources: [cognitoTestUser.testUserPasswordSecret.secretArn],
               }),
             ],
-          })
+          }
         );
 
         pipeline.addStage(deployStage, {
