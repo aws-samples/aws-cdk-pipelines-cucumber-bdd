@@ -35,6 +35,7 @@ export class RestAPIStack extends Stack {
   public readonly apiUrl: CfnOutput;
   public readonly cognitoClientId: CfnOutput;
   public readonly cognitoPoolId: CfnOutput;
+  public readonly cognitoPoolArn: CfnOutput;
 
   constructor(scope: Construct, id: string, props: RestAPIStackProps) {
     super(scope, id, props);
@@ -123,6 +124,10 @@ export class RestAPIStack extends Stack {
 
     this.cognitoPoolId = new CfnOutput(this, "CognitoPoolId", {
       value: userPool.userPoolId,
+    });
+
+    this.cognitoPoolArn = new CfnOutput(this, "CognitoPoolArn", {
+      value: userPool.userPoolArn,
     });
 
     cdknag.NagSuppressions.addResourceSuppressions(
