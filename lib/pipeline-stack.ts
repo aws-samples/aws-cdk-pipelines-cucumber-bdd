@@ -1,5 +1,6 @@
 import { Aspects, Aws, Stack, StackProps, pipelines } from "aws-cdk-lib";
 import * as CodeCommit from "aws-cdk-lib/aws-codecommit";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import {
   CodeBuildStep,
   CodePipeline,
@@ -10,7 +11,6 @@ import { Construct } from "constructs";
 import { DeployEnvironment } from "../types";
 import { CognitoTestUser } from "./cognito-test-user";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
-import { Effect, ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -44,7 +44,7 @@ export class PipelineStack extends Stack {
       synth: new CodeBuildStep("SynthStep", {
         input: CodePipelineSource.codeCommit(repo, props.branchName),
         installCommands: ["npm install -g aws-cdk"],
-        commands: ["npm ci", "npm run build", "npx cdk synth"],
+        commands: ["npm ci", "npm run test", "npm run build", "npx cdk synth"],
       }),
       dockerEnabledForSynth: true,
       dockerEnabledForSelfMutation: true,
@@ -70,7 +70,7 @@ export class PipelineStack extends Stack {
 
       if (deployEnvironment.environment !== "Prod") {
         /**
-         * The below custom construct will create a test cognito user that can be used for cucumber test runs.
+         * The below custom construct will create a secret manager secret placeholder for the cognito test user's password.
          */
         const cognitoTestUser = new CognitoTestUser(
           this,

@@ -1,8 +1,12 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { generateErrorResult, generateOkResult } from "./response";
 
-const addNumbers = (number1: number, number2: number): number => {
+export const addNumbers = (number1: number, number2: number): number => {
   return number1 + number2;
+};
+
+export const subtractNumbers = (number1: number, number2: number): number => {
+  return number1 - number2;
 };
 
 export const handler = async (event: APIGatewayProxyEvent) => {
@@ -14,6 +18,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     case "ADD":
       result = addNumbers(number1, number2);
       break;
+    case "SUBTRACT":
+      result = subtractNumbers(number1, number2);
     default:
       return generateErrorResult();
   }

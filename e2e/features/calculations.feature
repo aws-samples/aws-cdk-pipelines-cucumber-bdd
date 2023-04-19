@@ -11,3 +11,5 @@ Feature: Calculations
             | number1 | number2 | operation | calculation |
             | 2       | 2       | ADD       | 4           |
             | 1       | 5       | ADD       | 6           |
+            | 2       | 2       | SUBTRACT  | 0           |
+            | 1       | 5       | SUBTRACT  | -4          |
