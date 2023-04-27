@@ -9,6 +9,10 @@ export const subtractNumbers = (number1: number, number2: number): number => {
   return number1 - number2;
 };
 
+export const multiplyNumbers = (number1: number, number2: number): number => {
+  return number1 * number2;
+};
+
 export const handler = async (event: APIGatewayProxyEvent) => {
   const { operation, number1, number2 } = JSON.parse(event.body || "{}");
 
@@ -21,6 +25,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         break;
       case "SUBTRACT":
         result = subtractNumbers(number1, number2);
+        break;
+      case "MULTIPLY":
+        result = multiplyNumbers(number1, number2);
         break;
       default:
         return generateErrorResult();
