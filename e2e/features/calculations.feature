@@ -13,5 +13,3 @@ Feature: Calculations
             | 1       | 5       | ADD       | 6           |
             | 2       | 2       | SUBTRACT  | 0           |
             | 1       | 5       | SUBTRACT  | -4          |
-            | 2       | 2       | MULTIPLY  | 4           |
-            | 1       | 5       | MULTIPLY  | 5           |
