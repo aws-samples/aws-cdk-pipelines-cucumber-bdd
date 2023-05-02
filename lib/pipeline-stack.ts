@@ -11,6 +11,7 @@ import { Construct } from "constructs";
 import { DeployEnvironment } from "../types";
 import { CognitoTestUser } from "./cognito-test-user";
 import { RestAPIDeploymentStage } from "./rest-api-deployment-stage";
+import { CodePipelineWithLogging } from "./codepipeline-with-logging";
 
 export interface PipelineStackProps extends StackProps {
   createRepo: boolean;
@@ -38,9 +39,13 @@ export class PipelineStack extends Stack {
     }
 
     const pipeline = new CodePipeline(this, "Pipeline", {
-      pipelineName: `${props.repoName}-${props.branchName}`,
-      crossAccountKeys: true,
-      enableKeyRotation: true,
+      codePipeline: new CodePipelineWithLogging(
+        this,
+        "CodePipelineWithLogging",
+        {
+          pipelineName: `${props.repoName}-${props.branchName}`,
+        }
+      ).pipeline,
       synth: new CodeBuildStep("SynthStep", {
         input: CodePipelineSource.codeCommit(repo, props.branchName),
         installCommands: ["npm install -g aws-cdk"],
@@ -134,5 +139,34 @@ export class PipelineStack extends Stack {
         });
       }
     });
+
+    pipeline.buildPipeline();
+    this.suppressCodePipelineCDKNagFalsePositives(pipeline);
+  }
+
+  private suppressCodePipelineCDKNagFalsePositives(pipeline: CodePipeline) {
+    cdknag.NagSuppressions.addResourceSuppressions(
+      pipeline,
+      [
+        {
+          id: "AwsSolutions-IAM5",
+          reason:
+            "This pipeline uses a role that is least-priviledge. The use of * in the policy is required for certain permissions like the ability to interact with objects in the bucket as artifacts are created throughout the pipeline.",
+        },
+      ],
+      true
+    );
+
+    cdknag.NagSuppressions.addResourceSuppressions(
+      pipeline.pipeline,
+      [
+        {
+          id: "AwsSolutions-IAM5",
+          reason:
+            "This pipeline uses a role that is least-priviledge. The use of * in the policy is required for certain permissions like the ability to interact with objects in the bucket as artifacts are created throughout the pipeline.",
+        },
+      ],
+      true
+    );
   }
 }
