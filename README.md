@@ -6,7 +6,9 @@ This is a sample demo project with the intent to demonstrate how Cucumber BDD te
 
 This demo repo also showcases how the cucumber testing suite can be configured to automatically authenticate against an API deployment that requires Amazon Cognito authentication.
 
-## Tutorial
+# Architecture Diagram
+
+![Architecture Diagram](assets/Architecture-Diagram-With-Demo-API.png?raw=true "Architecture Diagram")
 
 # Prerequisites needed for inital deployment:
 
