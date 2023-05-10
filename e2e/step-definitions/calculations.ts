@@ -1,8 +1,8 @@
-import expect from "expect";
-import { Before, Given, Then, When } from "cucumber";
-import axios from "axios";
-import { SecretsManager } from "@aws-sdk/client-secrets-manager";
 import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
+import { SecretsManager } from "@aws-sdk/client-secrets-manager";
+import { Before, Given, Then, When } from "@cucumber/cucumber";
+import axios from "axios";
+import expect from "expect";
 
 const secretsManager = new SecretsManager({});
 const cognitoIdp = new CognitoIdentityProvider({});
