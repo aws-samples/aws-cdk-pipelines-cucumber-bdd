@@ -30,7 +30,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.352.0",
     "@aws-sdk/client-secrets-manager": "^3.352.0",
     "aws-cdk-lib": "^2.83.1",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "cdk-nag": "^2.27.37",
     "constructs": "^10.2.52",
     "source-map-support": "^0.5.21"
