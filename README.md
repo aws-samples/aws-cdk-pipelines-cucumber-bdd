@@ -15,10 +15,25 @@ This demo repo also showcases how the cucumber testing suite can be configured t
 - Docker must be installed and running
 - AWS Credentials must be configured that has appropriate permissions to deploy CDK applications.
 
+(Optional) If you want to connect to CodeCommit using a root account, federated access, or temporary credentials, you should set up access using `git-remote-codecommit`.
+
+You can also use `git-remote-codecommit` with an IAM user. Unlike other HTTPS connection methods, `git-remote-codecommit` does not require setting up Git credentials for the user.
+
+- Python (version 3 or later) and its package manager, pip, must be installed
+- [`git-remote-codecommit` must be installed](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-git-remote-codecommit.html#setting-up-git-remote-codecommit-install)
+
+_Note: Some IDEs do not support the clone URL format used by git-remote-codecommit. You might have to manually clone repositories to your local computer before you can work with them in your preferred IDE. For more information, see [Troubleshooting `git-remote-codecommit` and AWS CodeCommit.](https://docs.aws.amazon.com/codecommit/latest/userguide/troubleshooting-grc.html)_
+
 ## Initial Deployment Commands
 
+Windows
+
+- `./initial-deploy.ps1` deploys the demo
+
+MacOS / Linux
+
 - `chmod 700 initial-deploy.sh` changes permissions of the initial deploy script.
-- `./initial-deploy.sh` deploys the demo application stacks.
+- `./initial-deploy.sh` deploys the demo
 
 ## Below are CDK specific commands that may help with troubleshooting
 
