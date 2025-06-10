@@ -13,23 +13,23 @@
     "e2e": "node ./node_modules/@cucumber/cucumber/bin/cucumber-js e2e/features/*.feature --require-module ts-node/register --require e2e/step-definitions/calculations.ts"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.148",
+    "@types/aws-lambda": "^8.10.149",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.13",
-    "aws-cdk": "^2.1005.0",
-    "@cucumber/cucumber": "^11.2.0",
+    "@types/node": "^24.0.0",
+    "aws-cdk": "^2.1018.0",
+    "@cucumber/cucumber": "^11.3.0",
     "expect": "^29.7.0",
     "jest": "^29.7.0",
-    "ts-jest": "^29.3.0",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.774.0",
-    "@aws-sdk/client-secrets-manager": "^3.774.0",
-    "aws-cdk-lib": "^2.185.0",
-    "axios": "^1.8.4",
-    "cdk-nag": "^2.35.55",
+    "@aws-sdk/client-cognito-identity-provider": "^3.826.0",
+    "@aws-sdk/client-secrets-manager": "^3.826.0",
+    "aws-cdk-lib": "^2.200.1",
+    "axios": "^1.9.0",
+    "cdk-nag": "^2.36.14",
     "constructs": "^10.4.2",
     "source-map-support": "^0.5.21"
   }
